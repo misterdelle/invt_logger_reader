@@ -22,3 +22,8 @@ Additional field is `All` which contains all measurements and their values marsh
 
 ## Contributing
 Feel free if You want to extend this tool with new features. Just open issue or make PR.
+
+## To build docker image for Raspberry PI
+docker buildx build --platform linux/arm64/v8 --output type=docker -t misterdelle/invt-logger-reader:latest .
+
+docker push misterdelle/invt-logger-reader:latest
