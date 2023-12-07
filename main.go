@@ -44,7 +44,7 @@ var (
 // Set up an app config
 var app = Application{}
 
-func initialize() {
+func init() {
 	flag.Parse()
 
 	if app.Env != "" {
@@ -55,13 +55,26 @@ func initialize() {
 		fmt.Println("app.Env NON settato, carico i dati dal file .env")
 		godotenv.Load() // The Original .env
 		app.Env = os.Getenv("Env")
-		fmt.Printf("app.Env        : %s \n", app.Env)
+		fmt.Printf("app.Env                 : %s \n", app.Env)
 	}
 
-	app.InverterPort = os.Getenv("InverterPort")
-	inverterLoggerSerial, _ := strconv.Atoi(os.Getenv("InverterLoggerSerial"))
+	app.InverterPort = os.Getenv("inverter.port")
+	inverterLoggerSerial, _ := strconv.Atoi(os.Getenv("inverter.loggerSerial"))
 	app.InverterLoggerSerial = uint(inverterLoggerSerial)
-	app.InverterReadInterval, _ = strconv.Atoi(os.Getenv("InverterReadInterval"))
+	app.InverterReadInterval, _ = strconv.Atoi(os.Getenv("inverter.readInterval"))
+
+	app.MQTTURL = os.Getenv("mqtt.url")
+	app.MQTTUser = os.Getenv("mqtt.user")
+	app.MQTTPassword = os.Getenv("mqtt.password")
+	app.MQTTTopicName = os.Getenv("mqtt.prefix")
+
+	fmt.Printf("app.InverterPort        : %s \n", app.InverterPort)
+	fmt.Printf("app.InverterLoggerSerial: %d \n", app.InverterLoggerSerial)
+	fmt.Printf("app.InverterReadInterval: %d \n", app.InverterReadInterval)
+	fmt.Printf("app.MQTTURL             : %s \n", app.MQTTURL)
+	fmt.Printf("app.MQTTUser            : %s \n", app.MQTTUser)
+	fmt.Printf("app.MQTTPassword        : %s \n", app.MQTTPassword)
+	fmt.Printf("app.MQTTTopicName       : %s \n", app.MQTTTopicName)
 
 	var err error
 	config, err = NewConfig(app)
@@ -86,7 +99,7 @@ func initialize() {
 }
 
 func main() {
-	initialize()
+	// initialize()
 	failedConnections := 0
 
 	for {
