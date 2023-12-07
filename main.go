@@ -93,13 +93,13 @@ func init() {
 			log.Fatalf("MQTT connection failed: %s", err)
 		}
 
+		log.Printf("using MQTT at URL %s", config.Mqtt.Url)
 	}
 
 	device = invt.NewInvtLogger(config.Inverter.LoggerSerial, port)
 }
 
 func main() {
-	// initialize()
 	failedConnections := 0
 
 	for {

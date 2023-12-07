@@ -37,6 +37,7 @@ func NewConfig(app Application) (*Config, error) {
 	config.Mqtt.Url = app.MQTTURL
 	config.Mqtt.User = app.MQTTUser
 	config.Mqtt.Password = app.MQTTPassword
+	config.Mqtt.Prefix = app.MQTTTopicName
 
 	return config, nil
 }
