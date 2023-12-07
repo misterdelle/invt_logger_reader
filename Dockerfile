@@ -8,7 +8,7 @@ RUN go mod download && CGO_ENABLED=0
 
 RUN go build -ldflags "-s -w" -o invt-logger-reader
 
-FROM alpine:3.16.4
+FROM alpine:3.17
 
 WORKDIR /
 
