@@ -118,6 +118,8 @@ func main() {
 			continue
 		}
 
+		log.Println("Inverter Measurement: ", measurements)
+
 		failedConnections = 0
 
 		if hasMQTT {
@@ -143,6 +145,8 @@ func main() {
 
 			continue
 		}
+
+		log.Println("Station Measurement: ", measurementsStation)
 
 		failedConnections = 0
 

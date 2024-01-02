@@ -37,7 +37,6 @@ func (l LSWRequest) ToBytes() []byte {
 	buf[5] = 0x00
 	buf[6] = 0x00
 
-	// fmt.Printf("serial number: %0X\n", uint32SerialNumber)
 	binary.LittleEndian.PutUint32(buf[7:], uint32(l.serialNumber))
 
 	buf[11] = 0x02
@@ -144,21 +143,6 @@ func readRegisterRange(rr registerRange, connPort ports.CommunicationPort, seria
 		}
 
 		switch f.valueType {
-		case "STRING12":
-			mr := modbusReply[fieldOffset : fieldOffset+12]
-			v1 := int(mr[0])
-			v2 := int(mr[1])
-			v3 := int(mr[2])
-			v4 := int(mr[3])
-			v5 := int(mr[4])
-			v6 := int(mr[5])
-			v7 := int(mr[6])
-			v8 := int(mr[7])
-			v9 := int(mr[8])
-			v10 := int(mr[9])
-			v11 := int(mr[10])
-			v12 := int(mr[11])
-			reply[f.name] = fmt.Sprintf("%v%v%v%v%v%v%v%v%v%v%v%v", v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12)
 		case "U8":
 			mr := modbusReply[fieldOffset : fieldOffset+2]
 			v1 := int(mr[0])
@@ -168,28 +152,17 @@ func readRegisterRange(rr registerRange, connPort ports.CommunicationPort, seria
 			mr := modbusReply[fieldOffset : fieldOffset+2]
 			be := binary.BigEndian.Uint16(mr)
 			v := float64(be) * float64(f.factor)
-			// v := float64(binary.BigEndian.Uint16(modbusReply[fieldOffset:fieldOffset+2])) * float64(f.factor)
-			// reply[f.name] = float32(binary.BigEndian.Uint16(modbusReply[fieldOffset:fieldOffset+2])) * f.factor
 			reply[f.name] = strconv.FormatFloat(v, 'f', 2, 64)
 		case "U32":
-			// mr := modbusReply[fieldOffset : fieldOffset+4]
-			// be := binary.BigEndian.Uint32(mr)
-			// v := float64(be) * float64(f.factor)
-
 			mr1 := modbusReply[fieldOffset : fieldOffset+2]
-			mr2 := modbusReply[fieldOffset+2 : fieldOffset+4]
+			// mr2 := modbusReply[fieldOffset+2 : fieldOffset+4]
 			be1 := binary.BigEndian.Uint16(mr1)
-			be2 := binary.BigEndian.Uint16(mr2)
-			_ = be1
-			_ = be2
+			// be2 := binary.BigEndian.Uint16(mr2)
 
 			v := float64(be1) * float64(f.factor)
-			// v := float64(binary.BigEndian.Uint32(modbusReply[fieldOffset:fieldOffset+4])) * float64(f.factor)
-			// reply[f.name] = float32(binary.BigEndian.Uint32(modbusReply[fieldOffset:fieldOffset+4])) * f.factor
 			reply[f.name] = strconv.FormatFloat(v, 'f', 2, 64)
 		case "S16":
 			mr := modbusReply[fieldOffset : fieldOffset+2]
-			// be := binary.BigEndian.Uint16(mr)
 			be := TwoComplement(mr)
 			v := float64(be) * float64(f.factor)
 			reply[f.name] = strconv.FormatFloat(v, 'f', 2, 64)
@@ -220,39 +193,18 @@ func readStationData(connPort ports.CommunicationPort, serialNumber uint) (map[s
 	secondDayOfWeek := result["Second_DayOfWeek"].(string)
 
 	sep := strings.Index(yearMonth, "-")
-	year := "20" + yearMonth[:sep]
-	month := yearMonth[sep+1:]
-	mm, _ := strconv.Atoi(month)
-	if mm <= 9 {
-		month = "0" + month
-	}
+	year, _ := strconv.Atoi("20" + yearMonth[:sep])
+	month, _ := strconv.Atoi(yearMonth[sep+1:])
 
 	sep = strings.Index(dayRes, "-")
-	day := dayRes[:sep]
-	dd, _ := strconv.Atoi(day)
-	if dd <= 9 {
-		day = "0" + day
-	}
+	day, _ := strconv.Atoi(dayRes[:sep])
 
 	sep = strings.Index(hourMinute, "-")
-	hour := hourMinute[:sep]
-	hh, _ := strconv.Atoi(hour)
-	if hh <= 9 {
-		hour = "0" + hour
-	}
-
-	minute := hourMinute[sep+1:]
-	min, _ := strconv.Atoi(minute)
-	if min <= 9 {
-		minute = "0" + minute
-	}
+	hour, _ := strconv.Atoi(hourMinute[:sep])
+	minute, _ := strconv.Atoi(hourMinute[sep+1:])
 
 	sep = strings.Index(secondDayOfWeek, "-")
-	second := secondDayOfWeek[:sep]
-	sec, _ := strconv.Atoi(second)
-	if sec <= 9 {
-		second = "0" + second
-	}
+	second, _ := strconv.Atoi(secondDayOfWeek[:sep])
 	dayOfWeek := secondDayOfWeek[sep+1:]
 	_ = dayOfWeek
 
@@ -271,10 +223,15 @@ func readStationData(connPort ports.CommunicationPort, serialNumber uint) (map[s
 	loadTotalEnergy := result["Load Total Energy"].(string)
 	purchasingDayEnergy := result["Purchasing Day Energy"].(string)
 	purchasingTotalEnergy := result["Purchasing Total Energy"].(string)
+	powerPV1 := result["Power PV1"].(string)
+	powerPV2 := result["Power PV2"].(string)
+	powPV1, _ := strconv.ParseFloat(powerPV1, 64)
+	powPV2, _ := strconv.ParseFloat(powerPV2, 64)
+	totalPowerFromPV := fmt.Sprintf("%v", powPV1+powPV2)
 
 	result = make(map[string]interface{})
 
-	lastUpdateTime := fmt.Sprintf("%s-%s-%s %s:%s:%s", year, month, day, hour, minute, second)
+	lastUpdateTime := fmt.Sprintf("%04d-%02d-%02d %02d:%02d:%02d", year, month, day, hour, minute, second)
 	t, err := time.Parse("2006-01-02 15:04:05", lastUpdateTime)
 	if err != nil {
 		fmt.Println(err)
@@ -298,6 +255,9 @@ func readStationData(connPort ports.CommunicationPort, serialNumber uint) (map[s
 	result["loadTotalEnergy"] = loadTotalEnergy
 	result["purchasingDayEnergy"] = purchasingDayEnergy
 	result["purchasingTotalEnergy"] = purchasingTotalEnergy
+	result["powerFromPV1"] = powerPV1
+	result["powerFromPV2"] = powerPV2
+	result["totalPowerFromPV"] = totalPowerFromPV
 
 	// generationTotal := 0
 	// generationPower := 0

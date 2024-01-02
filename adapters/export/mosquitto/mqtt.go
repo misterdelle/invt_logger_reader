@@ -92,8 +92,6 @@ func (conn *Connection) InsertRecord(measurement map[string]interface{}) error {
 	m, _ := json.Marshal(measurementCopy)
 	measurementCopy2["inverter"] = string(m)
 
-	log.Println(measurementCopy2)
-
 	go func(measurement map[string]interface{}) {
 		// timestamp it
 		// measurement["LastTimestamp"] = time.Now().UnixNano() / int64(time.Millisecond)

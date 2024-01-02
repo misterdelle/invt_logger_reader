@@ -28,8 +28,10 @@ var allRegisterRanges = []registerRange{
 var stationRegisterRanges = []registerRange{
 	rrStationInfo,
 	rrStationData,
-	rrStationBattery,
+	rrStationBatterySOC,
+	rrStationBatteryPower,
 	rrStationPower,
+	rrStationPV,
 }
 
 func GetAllRegisterNames() []string {
@@ -213,15 +215,18 @@ var rrStationInfo = registerRange{
 	},
 }
 
-var rrStationBattery = registerRange{
+var rrStationBatterySOC = registerRange{
 	start: 0x3145,
-	end:   0x314A,
+	end:   0x3145,
 	replyFields: []field{
 		{0x3145, "batterySOC", "U16", 0.1, "%"},
-		{0x3146, "", "", 1, ""},
-		{0x3147, "", "", 1, ""},
-		{0x3148, "", "", 1, ""},
-		{0x3149, "", "", 1, ""},
+	},
+}
+
+var rrStationBatteryPower = registerRange{
+	start: 0x314A,
+	end:   0x314A,
+	replyFields: []field{
 		{0x314A, "batteryPower", "S16", 1, "W"},
 	},
 }
@@ -262,7 +267,17 @@ var rrStationData = registerRange{
 		{0x317D, "Purchasing Total Energy", "U32", 0.001, "kWh"},
 		{0x317F, "Bat Charge Total Energy", "U32", 0.001, "kWh"},
 		{0x3181, "Bat Discharge Total Energy", "U32", 0.001, "kWh"},
-		// {0x1234, "Inverter Serial Number", "STRING12", 1, ""},
+	},
+}
+
+var rrStationPV = registerRange{
+	start: 0x3132,
+	end:   0x3135,
+	replyFields: []field{
+		{0x3132, "Power PV1", "U16", 1, "kW"},
+		{0x3133, "", "", 1, ""},
+		{0x3134, "", "", 1, ""},
+		{0x3135, "Power PV2", "U16", 1, "kW"},
 	},
 }
 
