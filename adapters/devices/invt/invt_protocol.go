@@ -227,7 +227,7 @@ var rrStationBatteryPower = registerRange{
 	start: 0x314A,
 	end:   0x314A,
 	replyFields: []field{
-		{0x314A, "batteryPower", "S16", 1, "W"},
+		{0x314A, "batteryPower", "S16", 0.001, "kW"},
 	},
 }
 
