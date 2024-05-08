@@ -209,7 +209,7 @@ func loadStation() error {
 
 	if hasMQTT {
 		go func() {
-			err = mqtt.InsertGenericRecord("Station", measurementsStation)
+			err = mqtt.InsertGenericRecord("station", measurementsStation)
 			if err != nil {
 				log.Printf("failed to insert record to MQTT: %s\n", err)
 			} else {
