@@ -115,15 +115,17 @@ func (conn *Connection) Subscribe(topic string, callback mqtt.MessageHandler) {
 	conn.client.Subscribe(topic, 0, callback)
 }
 
-func (conn *Connection) InsertRecordStation(measurement map[string]interface{}) error {
+func (conn *Connection) InsertGenericRecord(topicName string, measurement map[string]interface{}) error {
 	go func(allData map[string]interface{}) {
 		for k, v := range allData {
-			token := conn.client.Publish(fmt.Sprintf("%s/station/%s", conn.prefix, k), 0, true, fmt.Sprintf("%v", v))
+			token := conn.client.Publish(fmt.Sprintf("%s/%s/%s", conn.prefix, topicName, k), 0, true, fmt.Sprintf("%v", v))
 			res := token.WaitTimeout(1 * time.Second)
 			if !res || token.Error() != nil {
 				log.Printf("error inserting to MQTT: %s", token.Error())
 			}
 		}
+
+		clear(measurement)
 	}(measurement)
 
 	return nil

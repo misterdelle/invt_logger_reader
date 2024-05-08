@@ -7,7 +7,6 @@ import (
 	_ "net/http/pprof"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -100,65 +99,73 @@ func init() {
 }
 
 func main() {
-	failedConnections := 0
-
 	for {
 		log.Printf("performing measurements")
 		timeStart := time.Now()
 
-		measurements, err := device.Query()
+		// //
+		// // Measurements
+		// //
+		// measurements, err := device.Query()
+		// if err != nil {
+		// 	log.Printf("failed to perform measurements: %s", err)
+		// 	failedConnections++
+
+		// 	if failedConnections > maximumFailedConnections {
+		// 		time.Sleep(time.Duration(config.Inverter.ReadInterval) * time.Second)
+		// 	}
+
+		// 	continue
+		// }
+
+		// log.Println("Inverter Measurement: ", measurements)
+
+		// failedConnections = 0
+
+		// if hasMQTT {
+		// 	go func() {
+		// 		err = mqtt.InsertRecord(measurements)
+		// 		if err != nil {
+		// 			log.Printf("failed to insert record to MQTT: %s\n", err)
+		// 		} else {
+		// 			log.Println("measurements pushed to MQTT")
+		// 		}
+		// 	}()
+		// }
+
+		err := loadStation()
 		if err != nil {
-			log.Printf("failed to perform measurements: %s", err)
-			failedConnections++
-
-			if failedConnections > maximumFailedConnections {
-				time.Sleep(time.Duration(config.Inverter.ReadInterval) * time.Second)
-			}
-
 			continue
 		}
 
-		log.Println("Inverter Measurement: ", measurements)
-
-		failedConnections = 0
-
-		if hasMQTT {
-			go func() {
-				err = mqtt.InsertRecord(measurements)
-				if err != nil {
-					log.Printf("failed to insert record to MQTT: %s\n", err)
-				} else {
-					log.Println("measurements pushed to MQTT")
-				}
-			}()
-		}
-
-		measurementsStation, err := device.QueryStation()
-
+		err = loadEnergyTodayTotals()
 		if err != nil {
-			log.Printf("failed to perform measurementsStation: %s", err)
-			failedConnections++
-
-			if failedConnections > maximumFailedConnections {
-				time.Sleep(time.Duration(config.Inverter.ReadInterval) * time.Second)
-			}
-
 			continue
 		}
 
-		log.Println("Station Measurement: ", measurementsStation)
+		err = loadGridOutput()
+		if err != nil {
+			continue
+		}
 
-		failedConnections = 0
+		err = loadInverterInfo()
+		if err != nil {
+			continue
+		}
 
-		if hasMQTT {
-			go func() {
-				err = mqtt.InsertRecordStation(measurementsStation)
-				if err != nil {
-					log.Printf("failed to insert record to MQTT: %s\n", err)
-				} else {
-					log.Println("measurementsStation pushed to MQTT")
-				}
-			}()
+		err = loadLoadInfo()
+		if err != nil {
+			continue
+		}
+
+		err = loadBatteryOutput()
+		if err != nil {
+			continue
+		}
+
+		err = loadPVOutput()
+		if err != nil {
+			continue
 		}
 
 		duration := time.Since(timeStart)
@@ -173,6 +180,272 @@ func main() {
 
 }
 
-func isSerialPort(portName string) bool {
-	return strings.HasPrefix(portName, "/")
+// func isSerialPort(portName string) bool {
+// 	return strings.HasPrefix(portName, "/")
+// }
+
+func loadStation() error {
+	failedConnections := 0
+
+	//
+	// Station
+	//
+	measurementsStation, err := device.QueryStation()
+
+	if err != nil {
+		log.Printf("failed to perform measurementsStation: %s", err)
+		failedConnections++
+
+		if failedConnections > maximumFailedConnections {
+			time.Sleep(time.Duration(config.Inverter.ReadInterval) * time.Second)
+		}
+
+		return err
+	}
+
+	log.Println("Station Measurement: ", measurementsStation)
+
+	failedConnections = 0
+
+	if hasMQTT {
+		go func() {
+			err = mqtt.InsertGenericRecord("Station", measurementsStation)
+			if err != nil {
+				log.Printf("failed to insert record to MQTT: %s\n", err)
+			} else {
+				log.Println("measurementsStation pushed to MQTT")
+			}
+		}()
+	}
+
+	return nil
+
+}
+
+func loadEnergyTodayTotals() error {
+	failedConnections := 0
+
+	//
+	// Energy Today Totals
+	//
+	measurementsEnergyTodayTotals, err := device.QueryEnergyTodayTotals()
+
+	if err != nil {
+		log.Printf("failed to perform measurementsEnergyTodayTotals: %s", err)
+		failedConnections++
+
+		if failedConnections > maximumFailedConnections {
+			time.Sleep(time.Duration(config.Inverter.ReadInterval) * time.Second)
+		}
+
+		return err
+	}
+
+	log.Println("measurementsEnergyTodayTotals: ", measurementsEnergyTodayTotals)
+
+	failedConnections = 0
+
+	if hasMQTT {
+		go func() {
+			err = mqtt.InsertGenericRecord("EnergyTodayTotals", measurementsEnergyTodayTotals)
+			if err != nil {
+				log.Printf("failed to insert record to MQTT: %s\n", err)
+			} else {
+				log.Println("measurementsEnergyTodayTotals pushed to MQTT")
+			}
+		}()
+	}
+
+	return nil
+
+}
+
+func loadGridOutput() error {
+	failedConnections := 0
+
+	//
+	// Grid Output
+	//
+	measurementsGridOutput, err := device.QueryGridOutput()
+
+	if err != nil {
+		log.Printf("failed to perform measurementsGridOutput: %s", err)
+		failedConnections++
+
+		if failedConnections > maximumFailedConnections {
+			time.Sleep(time.Duration(config.Inverter.ReadInterval) * time.Second)
+		}
+
+		return err
+	}
+
+	log.Println("measurementsGridOutput: ", measurementsGridOutput)
+
+	failedConnections = 0
+
+	if hasMQTT {
+		go func() {
+			err = mqtt.InsertGenericRecord("GridOutput", measurementsGridOutput)
+			if err != nil {
+				log.Printf("failed to insert record to MQTT: %s\n", err)
+			} else {
+				log.Println("measurementsGridOutput pushed to MQTT")
+			}
+		}()
+	}
+
+	return nil
+
+}
+
+func loadInverterInfo() error {
+	failedConnections := 0
+
+	//
+	// Inverter Info
+	//
+	measurementsInverterInfo, err := device.QueryInverterInfo()
+
+	if err != nil {
+		log.Printf("failed to perform measurementsInverterInfo: %s", err)
+		failedConnections++
+
+		if failedConnections > maximumFailedConnections {
+			time.Sleep(time.Duration(config.Inverter.ReadInterval) * time.Second)
+		}
+
+		return err
+	}
+
+	log.Println("measurementsInverterInfo: ", measurementsInverterInfo)
+
+	failedConnections = 0
+
+	if hasMQTT {
+		go func() {
+			err = mqtt.InsertGenericRecord("InverterInfo", measurementsInverterInfo)
+			if err != nil {
+				log.Printf("failed to insert record to MQTT: %s\n", err)
+			} else {
+				log.Println("measurementsInverterInfo pushed to MQTT")
+			}
+		}()
+	}
+
+	return nil
+
+}
+
+func loadLoadInfo() error {
+	failedConnections := 0
+
+	//
+	// Load Info
+	//
+	measurementsLoadInfo, err := device.QueryLoadInfo()
+
+	if err != nil {
+		log.Printf("failed to perform measurementsLoadInfo: %s", err)
+		failedConnections++
+
+		if failedConnections > maximumFailedConnections {
+			time.Sleep(time.Duration(config.Inverter.ReadInterval) * time.Second)
+		}
+
+		return err
+	}
+
+	log.Println("measurementsLoadInfo: ", measurementsLoadInfo)
+
+	failedConnections = 0
+
+	if hasMQTT {
+		go func() {
+			err = mqtt.InsertGenericRecord("LoadInfo", measurementsLoadInfo)
+			if err != nil {
+				log.Printf("failed to insert record to MQTT: %s\n", err)
+			} else {
+				log.Println("measurementsLoadInfo pushed to MQTT")
+			}
+		}()
+	}
+
+	return nil
+
+}
+
+func loadBatteryOutput() error {
+	failedConnections := 0
+
+	//
+	// Battery Output
+	//
+	measurementsBatteryOutput, err := device.QueryBatteryOutput()
+
+	if err != nil {
+		log.Printf("failed to perform measurementsBatteryOutput: %s", err)
+		failedConnections++
+
+		if failedConnections > maximumFailedConnections {
+			time.Sleep(time.Duration(config.Inverter.ReadInterval) * time.Second)
+		}
+
+		return err
+	}
+
+	log.Println("measurementsBatteryOutput: ", measurementsBatteryOutput)
+
+	failedConnections = 0
+
+	if hasMQTT {
+		go func() {
+			err = mqtt.InsertGenericRecord("BatteryOutput", measurementsBatteryOutput)
+			if err != nil {
+				log.Printf("failed to insert record to MQTT: %s\n", err)
+			} else {
+				log.Println("measurementsBatteryOutput pushed to MQTT")
+			}
+		}()
+	}
+
+	return nil
+
+}
+
+func loadPVOutput() error {
+	failedConnections := 0
+
+	//
+	// PV Output
+	//
+	measurementsPVOutput, err := device.QueryPVOutput()
+
+	if err != nil {
+		log.Printf("failed to perform measurementsPVOutput: %s", err)
+		failedConnections++
+
+		if failedConnections > maximumFailedConnections {
+			time.Sleep(time.Duration(config.Inverter.ReadInterval) * time.Second)
+		}
+
+		return err
+	}
+
+	log.Println("measurementsPVOutput: ", measurementsPVOutput)
+
+	failedConnections = 0
+
+	if hasMQTT {
+		go func() {
+			err = mqtt.InsertGenericRecord("PVOutput", measurementsPVOutput)
+			if err != nil {
+				log.Printf("failed to insert record to MQTT: %s\n", err)
+			} else {
+				log.Println("measurementsPVOutput pushed to MQTT")
+			}
+		}()
+	}
+
+	return nil
+
 }

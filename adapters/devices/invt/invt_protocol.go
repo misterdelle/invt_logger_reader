@@ -34,6 +34,30 @@ var stationRegisterRanges = []registerRange{
 	rrStationPV,
 }
 
+var energyTodayTotalsRegisterRanges = []registerRange{
+	rrEnergyTodayTotals,
+}
+
+var gridOutputRegisterRanges = []registerRange{
+	rrGridOutput,
+}
+
+var inverterInfoRegisterRanges = []registerRange{
+	rrINVInfo,
+}
+
+var loadInfoRegisterRanges = []registerRange{
+	rrLoadInfo,
+}
+
+var batteryOutputRanges = []registerRange{
+	rrBatOutput,
+}
+
+var pvOutputRanges = []registerRange{
+	rrPVOutput,
+}
+
 func GetAllRegisterNames() []string {
 	result := make([]string, 0)
 	for _, rr := range allRegisterRanges {
