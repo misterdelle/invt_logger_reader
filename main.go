@@ -292,7 +292,7 @@ func loadEnergyTodayTotals() error {
 		if err != nil {
 			log.Printf("failed to insert record to MQTT: %s\n", err)
 		} else {
-			log.Println("measurementsEnergyTodayTotals pushed to MQTT")
+			log.Println("EnergyTodayTotals pushed to MQTT")
 		}
 
 		go func(topic string, data map[string]interface{}) {
@@ -300,7 +300,7 @@ func loadEnergyTodayTotals() error {
 			if err != nil {
 				log.Printf("failed to insert record to MQTT: %s\n", err)
 			} else {
-				log.Println("measurementsEnergyTodayTotals pushed to MQTT")
+				log.Printf("%s pushed to MQTT", topic)
 			}
 		}("EnergyTodayTotals/PV", pv)
 
@@ -309,7 +309,7 @@ func loadEnergyTodayTotals() error {
 			if err != nil {
 				log.Printf("failed to insert record to MQTT: %s\n", err)
 			} else {
-				log.Println("measurementsEnergyTodayTotals pushed to MQTT")
+				log.Printf("%s pushed to MQTT", topic)
 			}
 		}("EnergyTodayTotals/Grid", grid)
 
@@ -318,7 +318,7 @@ func loadEnergyTodayTotals() error {
 			if err != nil {
 				log.Printf("failed to insert record to MQTT: %s\n", err)
 			} else {
-				log.Println("measurementsEnergyTodayTotals pushed to MQTT")
+				log.Printf("%s pushed to MQTT", topic)
 			}
 		}("EnergyTodayTotals/Load", load)
 
@@ -327,7 +327,7 @@ func loadEnergyTodayTotals() error {
 			if err != nil {
 				log.Printf("failed to insert record to MQTT: %s\n", err)
 			} else {
-				log.Println("measurementsEnergyTodayTotals pushed to MQTT")
+				log.Printf("%s pushed to MQTT", topic)
 			}
 		}("EnergyTodayTotals/Purchase", purchase)
 
@@ -336,7 +336,7 @@ func loadEnergyTodayTotals() error {
 			if err != nil {
 				log.Printf("failed to insert record to MQTT: %s\n", err)
 			} else {
-				log.Println("measurementsEnergyTodayTotals pushed to MQTT")
+				log.Printf("%s pushed to MQTT", topic)
 			}
 		}("EnergyTodayTotals/Battery Charge", batCharge)
 
@@ -345,7 +345,7 @@ func loadEnergyTodayTotals() error {
 			if err != nil {
 				log.Printf("failed to insert record to MQTT: %s\n", err)
 			} else {
-				log.Println("measurementsEnergyTodayTotals pushed to MQTT")
+				log.Printf("%s pushed to MQTT", topic)
 			}
 		}("EnergyTodayTotals/Battery Discharge", batDischarge)
 	}
@@ -403,7 +403,7 @@ func loadGridOutput() error {
 		if err != nil {
 			log.Printf("failed to insert record to MQTT: %s\n", err)
 		} else {
-			log.Println("measurementsGridOutput pushed to MQTT")
+			log.Println("GridOutput pushed to MQTT")
 		}
 
 		go func(topic string, data map[string]interface{}) {
@@ -411,7 +411,7 @@ func loadGridOutput() error {
 			if err != nil {
 				log.Printf("failed to insert record to MQTT: %s\n", err)
 			} else {
-				log.Println("measurementsGridOutput pushed to MQTT")
+				log.Printf("%s pushed to MQTT", topic)
 			}
 		}("GridOutput/Grid A", gridA)
 
@@ -420,7 +420,7 @@ func loadGridOutput() error {
 			if err != nil {
 				log.Printf("failed to insert record to MQTT: %s\n", err)
 			} else {
-				log.Println("measurementsGridOutput pushed to MQTT")
+				log.Printf("%s pushed to MQTT", topic)
 			}
 		}("GridOutput/Grid B", gridB)
 
@@ -429,7 +429,7 @@ func loadGridOutput() error {
 			if err != nil {
 				log.Printf("failed to insert record to MQTT: %s\n", err)
 			} else {
-				log.Println("measurementsGridOutput pushed to MQTT")
+				log.Printf("%s pushed to MQTT", topic)
 			}
 		}("GridOutput/Grid C", gridC)
 	}
@@ -488,7 +488,7 @@ func loadInverterInfo() error {
 		if err != nil {
 			log.Printf("failed to insert record to MQTT: %s\n", err)
 		} else {
-			log.Println("measurementsInverterInfo pushed to MQTT")
+			log.Println("InverterInfo pushed to MQTT")
 		}
 
 		go func(topic string, data map[string]interface{}) {
@@ -496,7 +496,7 @@ func loadInverterInfo() error {
 			if err != nil {
 				log.Printf("failed to insert record to MQTT: %s\n", err)
 			} else {
-				log.Println("measurementsInverterInfo pushed to MQTT")
+				log.Printf("%s pushed to MQTT", topic)
 			}
 		}("InverterInfo/INV A", invA)
 
@@ -505,7 +505,7 @@ func loadInverterInfo() error {
 			if err != nil {
 				log.Printf("failed to insert record to MQTT: %s\n", err)
 			} else {
-				log.Println("measurementsInverterInfo pushed to MQTT")
+				log.Printf("%s pushed to MQTT", topic)
 			}
 		}("InverterInfo/INV B", invB)
 
@@ -514,7 +514,7 @@ func loadInverterInfo() error {
 			if err != nil {
 				log.Printf("failed to insert record to MQTT: %s\n", err)
 			} else {
-				log.Println("measurementsInverterInfo pushed to MQTT")
+				log.Printf("%s pushed to MQTT", topic)
 			}
 		}("InverterInfo/INV C", invC)
 
@@ -576,7 +576,7 @@ func loadLoadInfo() error {
 		if err != nil {
 			log.Printf("failed to insert record to MQTT: %s\n", err)
 		} else {
-			log.Println("measurementsLoadInfo pushed to MQTT")
+			log.Println("LoadInfo pushed to MQTT")
 		}
 
 		go func(topic string, data map[string]interface{}) {
@@ -584,7 +584,7 @@ func loadLoadInfo() error {
 			if err != nil {
 				log.Printf("failed to insert record to MQTT: %s\n", err)
 			} else {
-				log.Println("measurementsLoadInfo pushed to MQTT")
+				log.Printf("%s pushed to MQTT", topic)
 			}
 		}("LoadInfo/Load A", loadA)
 
@@ -593,7 +593,7 @@ func loadLoadInfo() error {
 			if err != nil {
 				log.Printf("failed to insert record to MQTT: %s\n", err)
 			} else {
-				log.Println("measurementsLoadInfo pushed to MQTT")
+				log.Printf("%s pushed to MQTT", topic)
 			}
 		}("LoadInfo/Load B", loadB)
 
@@ -602,7 +602,7 @@ func loadLoadInfo() error {
 			if err != nil {
 				log.Printf("failed to insert record to MQTT: %s\n", err)
 			} else {
-				log.Println("measurementsLoadInfo pushed to MQTT")
+				log.Printf("%s pushed to MQTT", topic)
 			}
 		}("LoadInfo/Load C", loadC)
 	}
@@ -662,7 +662,7 @@ func loadBatteryOutput() error {
 			if err != nil {
 				log.Printf("failed to insert record to MQTT: %s\n", err)
 			} else {
-				log.Println("measurementsBatteryOutput pushed to MQTT")
+				log.Printf("%s pushed to MQTT", topic)
 			}
 		}("BatteryOutput/BAT", bat)
 
@@ -671,7 +671,7 @@ func loadBatteryOutput() error {
 			if err != nil {
 				log.Printf("failed to insert record to MQTT: %s\n", err)
 			} else {
-				log.Println("measurementsBatteryOutput pushed to MQTT")
+				log.Printf("%s pushed to MQTT", topic)
 			}
 		}("BatteryOutput/BMS BAT", bmsBAT)
 	}
@@ -720,7 +720,7 @@ func loadPVOutput() error {
 			if err != nil {
 				log.Printf("failed to insert record to MQTT: %s\n", err)
 			} else {
-				log.Println("measurementsPVOutput pushed to MQTT")
+				log.Printf("%s pushed to MQTT", topic)
 			}
 		}("PVOutput/PV1", PV1)
 
@@ -729,7 +729,7 @@ func loadPVOutput() error {
 			if err != nil {
 				log.Printf("failed to insert record to MQTT: %s\n", err)
 			} else {
-				log.Println("measurementsPVOutput pushed to MQTT")
+				log.Printf("%s pushed to MQTT", topic)
 			}
 		}("PVOutput/PV2", PV2)
 	}
