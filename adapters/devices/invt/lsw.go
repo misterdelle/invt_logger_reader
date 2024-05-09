@@ -310,7 +310,7 @@ func readEnergyTodayTotalsData(connPort ports.CommunicationPort, serialNumber ui
 	result["N BUS Voltage"] = nBUSVoltage
 	result["DC DC Temperature"] = dcdcTemperature
 	result["PV Day Energy"] = pvDayEnergy
-	result["Grid Da yEnergy"] = gridDayEnergy
+	result["Grid Day Energy"] = gridDayEnergy
 	result["Load Day Energy"] = loadDayEnergy
 	result["PV Month Energy"] = pvMonthEnergy
 	result["Grid Month Energy"] = gridMonthEnergy

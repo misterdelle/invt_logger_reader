@@ -317,19 +317,69 @@ func loadInverterInfo() error {
 		return err
 	}
 
+	invA := make(map[string]interface{})
+	invB := make(map[string]interface{})
+	invC := make(map[string]interface{})
+	root := make(map[string]interface{})
+
+	invA["INV A Voltage"] = measurementsInverterInfo["INV A Voltage"]
+	invA["INV A Current"] = measurementsInverterInfo["INV A Current"]
+	invA["INV A Power"] = measurementsInverterInfo["INV A Power"]
+	invA["INV A Freq"] = measurementsInverterInfo["INV A Freq"]
+
+	invB["INV B Voltage"] = measurementsInverterInfo["INV B Voltage"]
+	invB["INV B Current"] = measurementsInverterInfo["INV B Current"]
+	invB["INV B Power"] = measurementsInverterInfo["INV B Power"]
+	invB["INV B Freq"] = measurementsInverterInfo["INV B Freq"]
+
+	invC["INV C Voltage"] = measurementsInverterInfo["INV C Voltage"]
+	invC["INV C Current"] = measurementsInverterInfo["INV C Current"]
+	invC["INV C Power"] = measurementsInverterInfo["INV C Power"]
+	invC["INV C Freq"] = measurementsInverterInfo["INV C Freq"]
+
+	root["Leak Current"] = measurementsInverterInfo["Leak Current"]
+
 	log.Println("measurementsInverterInfo: ", measurementsInverterInfo)
 
 	failedConnections = 0
 
 	if hasMQTT {
-		go func() {
-			err = mqtt.InsertGenericRecord("InverterInfo", measurementsInverterInfo)
+		go func(topic string, data map[string]interface{}) {
+			err = mqtt.InsertGenericRecord(topic, data)
 			if err != nil {
 				log.Printf("failed to insert record to MQTT: %s\n", err)
 			} else {
 				log.Println("measurementsInverterInfo pushed to MQTT")
 			}
-		}()
+		}("InverterInfo", root)
+
+		go func(topic string, data map[string]interface{}) {
+			err = mqtt.InsertGenericRecord(topic, data)
+			if err != nil {
+				log.Printf("failed to insert record to MQTT: %s\n", err)
+			} else {
+				log.Println("measurementsInverterInfo pushed to MQTT")
+			}
+		}("InverterInfo/INV A", invA)
+
+		go func(topic string, data map[string]interface{}) {
+			err = mqtt.InsertGenericRecord(topic, data)
+			if err != nil {
+				log.Printf("failed to insert record to MQTT: %s\n", err)
+			} else {
+				log.Println("measurementsInverterInfo pushed to MQTT")
+			}
+		}("InverterInfo/INV B", invB)
+
+		go func(topic string, data map[string]interface{}) {
+			err = mqtt.InsertGenericRecord(topic, data)
+			if err != nil {
+				log.Printf("failed to insert record to MQTT: %s\n", err)
+			} else {
+				log.Println("measurementsInverterInfo pushed to MQTT")
+			}
+		}("InverterInfo/INV C", invC)
+
 	}
 
 	return nil

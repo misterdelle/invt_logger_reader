@@ -281,7 +281,7 @@ var rrStationData = registerRange{
 		{0x3169, "Load Total Energy", "U32", 0.001, "kWh"},
 		{0x316B, "Purchasing Day Energy", "U32", 0.001, "kWh"},
 		{0x316D, "Bat Charge Day Energy", "U32", 0.001, "kWh"},
-		{0x316F, "Bat Discharge Day Energy", "U32", 0.001, "kWh"}, //dischargePower
+		{0x316F, "Bat Discharge Day Energy", "U32", 0.001, "kWh"},
 		{0x3171, "Purchasing Month Energy", "U32", 0.001, "kWh"},
 		{0x3173, "Bat Charge Month Energy", "U32", 0.001, "kWh"},
 		{0x3175, "Bat Discharge Month Energy", "U32", 0.001, "kWh"},
