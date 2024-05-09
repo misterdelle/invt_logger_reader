@@ -241,19 +241,93 @@ func loadEnergyTodayTotals() error {
 		return err
 	}
 
+	pv := make(map[string]interface{})
+	grid := make(map[string]interface{})
+	load := make(map[string]interface{})
+	purchase := make(map[string]interface{})
+	root := make(map[string]interface{})
+
+	pv["PV Day Energy"] = measurementsEnergyTodayTotals["PV Day Energy"]
+	pv["PV Month Energy"] = measurementsEnergyTodayTotals["PV Month Energy"]
+	pv["PV Year Energy"] = measurementsEnergyTodayTotals["PV Year Energy"]
+	pv["PV Total Energy"] = measurementsEnergyTodayTotals["PV Total Energy"]
+
+	grid["Grid Day Energy"] = measurementsEnergyTodayTotals["Grid Day Energy"]
+	grid["Grid Month Energy"] = measurementsEnergyTodayTotals["Grid Month Energy"]
+	grid["Grid Year Energy"] = measurementsEnergyTodayTotals["Grid Year Energy"]
+	grid["Grid Total Energy"] = measurementsEnergyTodayTotals["Grid Total Energy"]
+
+	load["Load Day Energy"] = measurementsEnergyTodayTotals["Load Day Energy"]
+	load["Load Month Energy"] = measurementsEnergyTodayTotals["Load Month Energy"]
+	load["Load Year Energy"] = measurementsEnergyTodayTotals["Load Year Energy"]
+	load["Load Total Energy"] = measurementsEnergyTodayTotals["Load Total Energy"]
+
+	purchase["Purchasing Day Energy"] = measurementsEnergyTodayTotals["Purchasing Day Energy"]
+	purchase["Purchasing Month Energy"] = measurementsEnergyTodayTotals["Purchasing Month Energy"]
+	purchase["Purchasing Year Energy"] = measurementsEnergyTodayTotals["Purchasing Year Energy"]
+	purchase["Purchasing Total Energy"] = measurementsEnergyTodayTotals["Purchasing Total Energy"]
+
+	purchase["BAT Charge Day Energy"] = measurementsEnergyTodayTotals["BAT Charge Day Energy"]
+	purchase["BAT Charge Month Energy"] = measurementsEnergyTodayTotals["BAT Charge Month Energy"]
+	purchase["BAT Charge Year Energy"] = measurementsEnergyTodayTotals["BAT Charge Year Energy"]
+	purchase["BAT Charge Total Energy"] = measurementsEnergyTodayTotals["BAT Charge Total Energy"]
+
+	purchase["BAT Discharge Day Energy"] = measurementsEnergyTodayTotals["BAT Discharge Day Energy"]
+	purchase["BAT Discharge Month Energy"] = measurementsEnergyTodayTotals["BAT Discharge Month Energy"]
+	purchase["BAT Discharge Year Energy"] = measurementsEnergyTodayTotals["BAT Discharge Year Energy"]
+	purchase["BAT Discharge Total Energy"] = measurementsEnergyTodayTotals["BAT Discharge Total Energy"]
+
+	root["S BUS Voltage"] = measurementsEnergyTodayTotals["S BUS Voltage"]
+	root["N BUS Voltage"] = measurementsEnergyTodayTotals["N BUS Voltage"]
+	root["DC DC Temperature"] = measurementsEnergyTodayTotals["DC DC Temperature"]
+
 	log.Println("measurementsEnergyTodayTotals: ", measurementsEnergyTodayTotals)
 
 	failedConnections = 0
 
 	if hasMQTT {
-		go func() {
-			err = mqtt.InsertGenericRecord("EnergyTodayTotals", measurementsEnergyTodayTotals)
+		err = mqtt.InsertGenericRecord("EnergyTodayTotals", root)
+		if err != nil {
+			log.Printf("failed to insert record to MQTT: %s\n", err)
+		} else {
+			log.Println("measurementsEnergyTodayTotals pushed to MQTT")
+		}
+
+		go func(topic string, data map[string]interface{}) {
+			err = mqtt.InsertGenericRecord(topic, data)
 			if err != nil {
 				log.Printf("failed to insert record to MQTT: %s\n", err)
 			} else {
 				log.Println("measurementsEnergyTodayTotals pushed to MQTT")
 			}
-		}()
+		}("EnergyTodayTotals/PV", pv)
+
+		go func(topic string, data map[string]interface{}) {
+			err = mqtt.InsertGenericRecord(topic, data)
+			if err != nil {
+				log.Printf("failed to insert record to MQTT: %s\n", err)
+			} else {
+				log.Println("measurementsEnergyTodayTotals pushed to MQTT")
+			}
+		}("EnergyTodayTotals/Grid", grid)
+
+		go func(topic string, data map[string]interface{}) {
+			err = mqtt.InsertGenericRecord(topic, data)
+			if err != nil {
+				log.Printf("failed to insert record to MQTT: %s\n", err)
+			} else {
+				log.Println("measurementsEnergyTodayTotals pushed to MQTT")
+			}
+		}("EnergyTodayTotals/Load", load)
+
+		go func(topic string, data map[string]interface{}) {
+			err = mqtt.InsertGenericRecord(topic, data)
+			if err != nil {
+				log.Printf("failed to insert record to MQTT: %s\n", err)
+			} else {
+				log.Println("measurementsEnergyTodayTotals pushed to MQTT")
+			}
+		}("EnergyTodayTotals/Purchase", purchase)
 	}
 
 	return nil
