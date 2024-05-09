@@ -322,20 +322,20 @@ func loadInverterInfo() error {
 	invC := make(map[string]interface{})
 	root := make(map[string]interface{})
 
-	invA["INV A Voltage"] = measurementsInverterInfo["INV A Voltage"]
-	invA["INV A Current"] = measurementsInverterInfo["INV A Current"]
-	invA["INV A Power"] = measurementsInverterInfo["INV A Power"]
-	invA["INV A Freq"] = measurementsInverterInfo["INV A Freq"]
+	invA["Inv A Voltage"] = measurementsInverterInfo["Inv A Voltage"]
+	invA["Inv A Current"] = measurementsInverterInfo["Inv A Current"]
+	invA["Inv A Power"] = measurementsInverterInfo["Inv A Power"]
+	invA["Inv A Freq"] = measurementsInverterInfo["Inv A Freq"]
 
-	invB["INV B Voltage"] = measurementsInverterInfo["INV B Voltage"]
-	invB["INV B Current"] = measurementsInverterInfo["INV B Current"]
-	invB["INV B Power"] = measurementsInverterInfo["INV B Power"]
-	invB["INV B Freq"] = measurementsInverterInfo["INV B Freq"]
+	invB["Inv B Voltage"] = measurementsInverterInfo["Inv B Voltage"]
+	invB["Inv B Current"] = measurementsInverterInfo["Inv B Current"]
+	invB["Inv B Power"] = measurementsInverterInfo["Inv B Power"]
+	invB["Inv B Freq"] = measurementsInverterInfo["Inv B Freq"]
 
-	invC["INV C Voltage"] = measurementsInverterInfo["INV C Voltage"]
-	invC["INV C Current"] = measurementsInverterInfo["INV C Current"]
-	invC["INV C Power"] = measurementsInverterInfo["INV C Power"]
-	invC["INV C Freq"] = measurementsInverterInfo["INV C Freq"]
+	invC["Inv C Voltage"] = measurementsInverterInfo["Inv C Voltage"]
+	invC["Inv C Current"] = measurementsInverterInfo["Inv C Current"]
+	invC["Inv C Power"] = measurementsInverterInfo["Inv C Power"]
+	invC["Inv C Freq"] = measurementsInverterInfo["Inv C Freq"]
 
 	root["Leak Current"] = measurementsInverterInfo["Leak Current"]
 
