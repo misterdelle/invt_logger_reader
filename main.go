@@ -279,19 +279,65 @@ func loadGridOutput() error {
 		return err
 	}
 
+	gridA := make(map[string]interface{})
+	gridB := make(map[string]interface{})
+	gridC := make(map[string]interface{})
+	root := make(map[string]interface{})
+
+	gridA["Inv A Voltage"] = measurementsGridOutput["Grid A Voltage"]
+	gridA["Inv A Current"] = measurementsGridOutput["Grid A Current"]
+	gridA["Inv A Power"] = measurementsGridOutput["Grid A Power"]
+
+	gridB["Inv B Voltage"] = measurementsGridOutput["Grid B Voltage"]
+	gridB["Inv B Current"] = measurementsGridOutput["Grid B Current"]
+	gridB["Inv B Power"] = measurementsGridOutput["Grid B Power"]
+
+	gridC["Inv C Voltage"] = measurementsGridOutput["Grid C Voltage"]
+	gridC["Inv C Current"] = measurementsGridOutput["Grid C Current"]
+	gridC["Inv C Power"] = measurementsGridOutput["Grid C Power"]
+
+	root["Grid Freq"] = measurementsGridOutput["Grid Freq"]
+	root["Inv 1 Temperature"] = measurementsGridOutput["Inv 1 Temperature"]
+	root["Inv 2 Temperature"] = measurementsGridOutput["Inv 2 Temperature"]
+
 	log.Println("measurementsGridOutput: ", measurementsGridOutput)
 
 	failedConnections = 0
 
 	if hasMQTT {
-		go func() {
-			err = mqtt.InsertGenericRecord("GridOutput", measurementsGridOutput)
+		err = mqtt.InsertGenericRecord("GridOutput", root)
+		if err != nil {
+			log.Printf("failed to insert record to MQTT: %s\n", err)
+		} else {
+			log.Println("measurementsGridOutput pushed to MQTT")
+		}
+
+		go func(topic string, data map[string]interface{}) {
+			err = mqtt.InsertGenericRecord(topic, data)
 			if err != nil {
 				log.Printf("failed to insert record to MQTT: %s\n", err)
 			} else {
 				log.Println("measurementsGridOutput pushed to MQTT")
 			}
-		}()
+		}("GridOutput/Grid A", gridA)
+
+		go func(topic string, data map[string]interface{}) {
+			err = mqtt.InsertGenericRecord(topic, data)
+			if err != nil {
+				log.Printf("failed to insert record to MQTT: %s\n", err)
+			} else {
+				log.Println("measurementsGridOutput pushed to MQTT")
+			}
+		}("GridOutput/Grid B", gridB)
+
+		go func(topic string, data map[string]interface{}) {
+			err = mqtt.InsertGenericRecord(topic, data)
+			if err != nil {
+				log.Printf("failed to insert record to MQTT: %s\n", err)
+			} else {
+				log.Println("measurementsGridOutput pushed to MQTT")
+			}
+		}("GridOutput/Grid C", gridC)
 	}
 
 	return nil
