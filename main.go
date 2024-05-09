@@ -449,19 +449,68 @@ func loadLoadInfo() error {
 		return err
 	}
 
+	loadA := make(map[string]interface{})
+	loadB := make(map[string]interface{})
+	loadC := make(map[string]interface{})
+	root := make(map[string]interface{})
+
+	loadA["Load A Voltage"] = measurementsLoadInfo["Load A Voltage"]
+	loadA["Load A Current"] = measurementsLoadInfo["Load A Current"]
+	loadA["Load A Power"] = measurementsLoadInfo["Load A Power"]
+	loadA["Load A Rate"] = measurementsLoadInfo["Load A Rate"]
+
+	loadB["Load B Voltage"] = measurementsLoadInfo["Load B Voltage"]
+	loadB["Load B Current"] = measurementsLoadInfo["Load B Current"]
+	loadB["Load B Power"] = measurementsLoadInfo["Load B Power"]
+	loadB["Load B Rate"] = measurementsLoadInfo["Load B Rate"]
+
+	loadC["Load C Voltage"] = measurementsLoadInfo["Load C Voltage"]
+	loadC["Load C Current"] = measurementsLoadInfo["Load C Current"]
+	loadC["Load C Power"] = measurementsLoadInfo["Load C Power"]
+	loadC["Load C Rate"] = measurementsLoadInfo["Load C Rate"]
+
+	root["Generator Port Voltage A"] = measurementsLoadInfo["Generator Port Voltage A"]
+	root["Generator Port Voltage B"] = measurementsLoadInfo["Generator Port Voltage B"]
+	root["Generator Port Voltage C"] = measurementsLoadInfo["Generator Port Voltage C"]
+
 	log.Println("measurementsLoadInfo: ", measurementsLoadInfo)
 
 	failedConnections = 0
 
 	if hasMQTT {
-		go func() {
-			err = mqtt.InsertGenericRecord("LoadInfo", measurementsLoadInfo)
+		err = mqtt.InsertGenericRecord("LoadInfo", root)
+		if err != nil {
+			log.Printf("failed to insert record to MQTT: %s\n", err)
+		} else {
+			log.Println("measurementsLoadInfo pushed to MQTT")
+		}
+
+		go func(topic string, data map[string]interface{}) {
+			err = mqtt.InsertGenericRecord(topic, data)
 			if err != nil {
 				log.Printf("failed to insert record to MQTT: %s\n", err)
 			} else {
 				log.Println("measurementsLoadInfo pushed to MQTT")
 			}
-		}()
+		}("LoadInfo/Load A", loadA)
+
+		go func(topic string, data map[string]interface{}) {
+			err = mqtt.InsertGenericRecord(topic, data)
+			if err != nil {
+				log.Printf("failed to insert record to MQTT: %s\n", err)
+			} else {
+				log.Println("measurementsLoadInfo pushed to MQTT")
+			}
+		}("LoadInfo/Load B", loadB)
+
+		go func(topic string, data map[string]interface{}) {
+			err = mqtt.InsertGenericRecord(topic, data)
+			if err != nil {
+				log.Printf("failed to insert record to MQTT: %s\n", err)
+			} else {
+				log.Println("measurementsLoadInfo pushed to MQTT")
+			}
+		}("LoadInfo/Load C", loadC)
 	}
 
 	return nil
@@ -524,13 +573,6 @@ func loadPVOutput() error {
 
 		return err
 	}
-
-	// result["Voltage PV 1"] = voltagePV1
-	// result["Current PV 1"] = currentPV1
-	// result["Power PV 1"] = powerPV1
-	// result["Voltage PV 2"] = voltagePV2
-	// result["Current PV 2"] = currentPV2
-	// result["Power PV 2"] = powerPV2
 
 	PV1 := make(map[string]interface{})
 	PV2 := make(map[string]interface{})
