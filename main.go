@@ -245,6 +245,8 @@ func loadEnergyTodayTotals() error {
 	grid := make(map[string]interface{})
 	load := make(map[string]interface{})
 	purchase := make(map[string]interface{})
+	batCharge := make(map[string]interface{})
+	batDischarge := make(map[string]interface{})
 	root := make(map[string]interface{})
 
 	pv["PV Day Energy"] = measurementsEnergyTodayTotals["PV Day Energy"]
@@ -267,15 +269,15 @@ func loadEnergyTodayTotals() error {
 	purchase["Purchasing Year Energy"] = measurementsEnergyTodayTotals["Purchasing Year Energy"]
 	purchase["Purchasing Total Energy"] = measurementsEnergyTodayTotals["Purchasing Total Energy"]
 
-	purchase["BAT Charge Day Energy"] = measurementsEnergyTodayTotals["BAT Charge Day Energy"]
-	purchase["BAT Charge Month Energy"] = measurementsEnergyTodayTotals["BAT Charge Month Energy"]
-	purchase["BAT Charge Year Energy"] = measurementsEnergyTodayTotals["BAT Charge Year Energy"]
-	purchase["BAT Charge Total Energy"] = measurementsEnergyTodayTotals["BAT Charge Total Energy"]
+	batCharge["BAT Charge Day Energy"] = measurementsEnergyTodayTotals["BAT Charge Day Energy"]
+	batCharge["BAT Charge Month Energy"] = measurementsEnergyTodayTotals["BAT Charge Month Energy"]
+	batCharge["BAT Charge Year Energy"] = measurementsEnergyTodayTotals["BAT Charge Year Energy"]
+	batCharge["BAT Charge Total Energy"] = measurementsEnergyTodayTotals["BAT Charge Total Energy"]
 
-	purchase["BAT Discharge Day Energy"] = measurementsEnergyTodayTotals["BAT Discharge Day Energy"]
-	purchase["BAT Discharge Month Energy"] = measurementsEnergyTodayTotals["BAT Discharge Month Energy"]
-	purchase["BAT Discharge Year Energy"] = measurementsEnergyTodayTotals["BAT Discharge Year Energy"]
-	purchase["BAT Discharge Total Energy"] = measurementsEnergyTodayTotals["BAT Discharge Total Energy"]
+	batDischarge["BAT Discharge Day Energy"] = measurementsEnergyTodayTotals["BAT Discharge Day Energy"]
+	batDischarge["BAT Discharge Month Energy"] = measurementsEnergyTodayTotals["BAT Discharge Month Energy"]
+	batDischarge["BAT Discharge Year Energy"] = measurementsEnergyTodayTotals["BAT Discharge Year Energy"]
+	batDischarge["BAT Discharge Total Energy"] = measurementsEnergyTodayTotals["BAT Discharge Total Energy"]
 
 	root["S BUS Voltage"] = measurementsEnergyTodayTotals["S BUS Voltage"]
 	root["N BUS Voltage"] = measurementsEnergyTodayTotals["N BUS Voltage"]
@@ -328,6 +330,24 @@ func loadEnergyTodayTotals() error {
 				log.Println("measurementsEnergyTodayTotals pushed to MQTT")
 			}
 		}("EnergyTodayTotals/Purchase", purchase)
+
+		go func(topic string, data map[string]interface{}) {
+			err = mqtt.InsertGenericRecord(topic, data)
+			if err != nil {
+				log.Printf("failed to insert record to MQTT: %s\n", err)
+			} else {
+				log.Println("measurementsEnergyTodayTotals pushed to MQTT")
+			}
+		}("EnergyTodayTotals/Battery Charge", batCharge)
+
+		go func(topic string, data map[string]interface{}) {
+			err = mqtt.InsertGenericRecord(topic, data)
+			if err != nil {
+				log.Printf("failed to insert record to MQTT: %s\n", err)
+			} else {
+				log.Println("measurementsEnergyTodayTotals pushed to MQTT")
+			}
+		}("EnergyTodayTotals/Battery Discharge", batDischarge)
 	}
 
 	return nil
@@ -610,19 +630,50 @@ func loadBatteryOutput() error {
 		return err
 	}
 
+	bat := make(map[string]interface{})
+	bmsBAT := make(map[string]interface{})
+
+	bat["BAT Voltage"] = measurementsBatteryOutput["BAT Voltage"]
+	bat["BAT Current"] = measurementsBatteryOutput["BAT Current"]
+	bat["BAT 1 Current"] = measurementsBatteryOutput["BAT 1 Current"]
+	bat["BAT 2 Current"] = measurementsBatteryOutput["BAT 2 Current"]
+	bat["BAT 3 Current"] = measurementsBatteryOutput["BAT 3 Current"]
+	bat["BAT SOC"] = measurementsBatteryOutput["BAT SOC"]
+	bat["BAT Temperature"] = measurementsBatteryOutput["BAT Temperature"]
+	bat["BAT Charge Voltage"] = measurementsBatteryOutput["BAT Charge Voltage"]
+	bat["BAT Charge Current Limit"] = measurementsBatteryOutput["BAT Charge Current Limit"]
+	bat["BAT Discharge Current Limit"] = measurementsBatteryOutput["BAT Discharge Current Limit"]
+	bat["BAT Power"] = measurementsBatteryOutput["BAT Power"]
+
+	bmsBAT["BMS BAT Voltage"] = measurementsBatteryOutput["BMS BAT Voltage"]
+	bmsBAT["BMS BAT Current"] = measurementsBatteryOutput["BMS BAT Current"]
+	bmsBAT["BMS BAT Cell Max Voltage"] = measurementsBatteryOutput["BMS BAT Cell Max Voltage"]
+	bmsBAT["BMS BAT Cell Min Voltage"] = measurementsBatteryOutput["BMS BAT Cell Min Voltage"]
+	bmsBAT["BMS BAT Cell Max Temperature"] = measurementsBatteryOutput["BMS BAT Cell Max Temperature"]
+	bmsBAT["BMS BAT Cell Min Temperature"] = measurementsBatteryOutput["BMS BAT Cell Min Temperature"]
+
 	log.Println("measurementsBatteryOutput: ", measurementsBatteryOutput)
 
 	failedConnections = 0
 
 	if hasMQTT {
-		go func() {
-			err = mqtt.InsertGenericRecord("BatteryOutput", measurementsBatteryOutput)
+		go func(topic string, data map[string]interface{}) {
+			err = mqtt.InsertGenericRecord(topic, data)
 			if err != nil {
 				log.Printf("failed to insert record to MQTT: %s\n", err)
 			} else {
 				log.Println("measurementsBatteryOutput pushed to MQTT")
 			}
-		}()
+		}("BatteryOutput/BAT", bat)
+
+		go func(topic string, data map[string]interface{}) {
+			err = mqtt.InsertGenericRecord(topic, data)
+			if err != nil {
+				log.Printf("failed to insert record to MQTT: %s\n", err)
+			} else {
+				log.Println("measurementsBatteryOutput pushed to MQTT")
+			}
+		}("BatteryOutput/BMS BAT", bmsBAT)
 	}
 
 	return nil
