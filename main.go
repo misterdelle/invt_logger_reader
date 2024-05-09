@@ -525,19 +525,46 @@ func loadPVOutput() error {
 		return err
 	}
 
+	// result["Voltage PV 1"] = voltagePV1
+	// result["Current PV 1"] = currentPV1
+	// result["Power PV 1"] = powerPV1
+	// result["Voltage PV 2"] = voltagePV2
+	// result["Current PV 2"] = currentPV2
+	// result["Power PV 2"] = powerPV2
+
+	PV1 := make(map[string]interface{})
+	PV2 := make(map[string]interface{})
+
+	PV1["Voltage PV 1"] = measurementsPVOutput["Voltage PV 1"]
+	PV1["Current PV 1"] = measurementsPVOutput["Current PV 1"]
+	PV1["Power PV 1"] = measurementsPVOutput["Power PV 1"]
+
+	PV2["Voltage PV 2"] = measurementsPVOutput["Voltage PV 2"]
+	PV2["Current PV 2"] = measurementsPVOutput["Current PV 2"]
+	PV2["Power PV 2"] = measurementsPVOutput["Power PV 2"]
+
 	log.Println("measurementsPVOutput: ", measurementsPVOutput)
 
 	failedConnections = 0
 
 	if hasMQTT {
-		go func() {
-			err = mqtt.InsertGenericRecord("PVOutput", measurementsPVOutput)
+		go func(topic string, data map[string]interface{}) {
+			err = mqtt.InsertGenericRecord(topic, data)
 			if err != nil {
 				log.Printf("failed to insert record to MQTT: %s\n", err)
 			} else {
 				log.Println("measurementsPVOutput pushed to MQTT")
 			}
-		}()
+		}("PVOutput/PV1", PV1)
+
+		go func(topic string, data map[string]interface{}) {
+			err = mqtt.InsertGenericRecord(topic, data)
+			if err != nil {
+				log.Printf("failed to insert record to MQTT: %s\n", err)
+			} else {
+				log.Println("measurementsPVOutput pushed to MQTT")
+			}
+		}("PVOutput/PV2", PV2)
 	}
 
 	return nil
