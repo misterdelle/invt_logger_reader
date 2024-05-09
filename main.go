@@ -344,14 +344,12 @@ func loadInverterInfo() error {
 	failedConnections = 0
 
 	if hasMQTT {
-		go func(topic string, data map[string]interface{}) {
-			err = mqtt.InsertGenericRecord(topic, data)
-			if err != nil {
-				log.Printf("failed to insert record to MQTT: %s\n", err)
-			} else {
-				log.Println("measurementsInverterInfo pushed to MQTT")
-			}
-		}("InverterInfo", root)
+		err = mqtt.InsertGenericRecord("InverterInfo", root)
+		if err != nil {
+			log.Printf("failed to insert record to MQTT: %s\n", err)
+		} else {
+			log.Println("measurementsInverterInfo pushed to MQTT")
+		}
 
 		go func(topic string, data map[string]interface{}) {
 			err = mqtt.InsertGenericRecord(topic, data)
