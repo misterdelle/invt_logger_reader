@@ -4,3 +4,4 @@ config.yaml
 invt
 invt-arm
 .idea
+.env.PROD

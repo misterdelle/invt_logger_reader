@@ -177,6 +177,11 @@ func readStationData(connPort ports.CommunicationPort, serialNumber uint) (map[s
 	result := make(map[string]interface{})
 
 	for _, rr := range stationRegisterRanges {
+		/* start: 0x3126, end:   0x3126, */
+		if rr.start == 0x3126 {
+			fmt.Println(rr.start)
+		}
+
 		reply, err := readRegisterRange(rr, connPort, serialNumber)
 		if err != nil {
 			return nil, err

@@ -103,36 +103,6 @@ func main() {
 		log.Printf("performing measurements")
 		timeStart := time.Now()
 
-		// //
-		// // Measurements
-		// //
-		// measurements, err := device.Query()
-		// if err != nil {
-		// 	log.Printf("failed to perform measurements: %s", err)
-		// 	failedConnections++
-
-		// 	if failedConnections > maximumFailedConnections {
-		// 		time.Sleep(time.Duration(config.Inverter.ReadInterval) * time.Second)
-		// 	}
-
-		// 	continue
-		// }
-
-		// log.Println("Inverter Measurement: ", measurements)
-
-		// failedConnections = 0
-
-		// if hasMQTT {
-		// 	go func() {
-		// 		err = mqtt.InsertRecord(measurements)
-		// 		if err != nil {
-		// 			log.Printf("failed to insert record to MQTT: %s\n", err)
-		// 		} else {
-		// 			log.Println("measurements pushed to MQTT")
-		// 		}
-		// 	}()
-		// }
-
 		err := loadStation()
 		if err != nil {
 			continue

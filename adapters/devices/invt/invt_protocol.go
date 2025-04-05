@@ -195,7 +195,7 @@ var rrLoadInfo = registerRange{
 		{0x3123, "LI: Load A Rate", "U16", 0.1, "%"},
 		{0x3124, "LI: Load B Voltage", "U16", 0.1, "V"},
 		{0x3125, "LI: Load B Current", "U16", 0.1, "A"},
-		{0x3126, "LI: Load B Power", "U16", 1, "W"}, // currentConsumptionPower
+		{0x3126, "LI: Load B Power", "U16", 1, "W"},
 		{0x3127, "LI: Load B Rate", "U16", 0.1, "%"},
 		{0x3128, "LI: Load C Voltage", "U16", 0.1, "V"},
 		{0x3129, "LI: Load C Current", "U16", 0.1, "A"},
@@ -217,7 +217,7 @@ var rrINVInfo = registerRange{
 		{0x3192, "II: INV A Power", "U16", 1, "W"},
 		{0x3193, "II: INV B Voltage", "U16", 0.1, "V"},
 		{0x3194, "II: INV B Current", "U16", 0.1, "A"},
-		{0x3195, "II: INV B Power", "U16", 1, "W"},
+		{0x3195, "II: INV B Power", "U16", 1, "W"}, // currentConsumptionPower
 		{0x3196, "II: INV C Voltage", "U16", 0.1, "V"},
 		{0x3197, "II: INV C Current", "U16", 0.1, "A"},
 		{0x3198, "II: INV C Power", "U16", 1, "W"},
@@ -256,10 +256,11 @@ var rrStationBatteryPower = registerRange{
 }
 
 var rrStationPower = registerRange{
-	start: 0x3126,
-	end:   0x3126,
+	start: 0x3195,
+	end:   0x3195,
 	replyFields: []field{
-		{0x3126, "currentConsumptionPower", "U16", 1, "W"},
+		//{0x3126, "currentConsumptionPower", "U16", 1, "W"},
+		{0x3195, "currentConsumptionPower", "U16", 1, "W"},
 	},
 }
 

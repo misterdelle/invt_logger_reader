@@ -1,8 +1,6 @@
 package main
 
 import (
-	"errors"
-
 	"github.com/misterdelle/invt_logger_reader/adapters/export/mosquitto"
 )
 
@@ -13,18 +11,6 @@ type Config struct {
 		ReadInterval int
 	}
 	Mqtt mosquitto.MqttConfig
-}
-
-func (c *Config) validate() error {
-	if c.Inverter.Port == "" {
-		return errors.New("missing required inverter.port config")
-	}
-
-	if c.Inverter.LoggerSerial == 0 {
-		return errors.New("missing required inverter.loggerSerial config")
-	}
-
-	return nil
 }
 
 func NewConfig(app Application) (*Config, error) {
